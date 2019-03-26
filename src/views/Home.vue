@@ -1,18 +1,30 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+<section>
+  <slider></slider>
+  <discovery v-for='(r,index) in this.homeResults' :key="'discov'+index" :text="homeThemes[index]" :reverse='index%2==0?true:false' :results='homeResults[index]'></discovery>
+</section>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import slider from '@/components/slider.vue'
+import discovery from '@/components/discovery.vue'
 
 export default {
   name: 'home',
   components: {
-    HelloWorld
+    slider,
+    discovery
+  },
+  computed: {
+    homeResults: function() {
+      return this.$store.state.homeResults;
+    },
+    homeThemes: function() {
+      return this.$store.state.homeThemes;
+    }
   }
 }
 </script>
+
+<style scoped>
+</style>

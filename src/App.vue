@@ -1,29 +1,158 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+<div id="app">
+  <navbar :navWidth="1600" title="Movie Storm" :navElements="[{name: 'Discover', url: '/'},{name: 'Advanced Search', url: '/advanced'}]" :backgroundOnScroll="false" v-on:inputTrigger="handleInput($event)" mobileSrc="@/assets/hamburger.svg">
+  </navbar>
+  <loading></loading>
+  <router-view />
+  <contact></contact>
+</div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+import axios from 'axios'
+
+import navbar from '@/components/navbar.vue'
+import loading from '@/components/loading.vue'
+import contact from '@/components/contact.vue'
+
+export default {
+  name: 'app',
+  components: {
+    navbar,
+    loading,
+    contact
+  },
+  mounted() {
+
+    let allTypes = ['movie', 'tv', 'person']; // 'all' was removed because it repeated types
+
+    for (let i = 0; i < 3; i++) {
+
+      let rand = Math.floor(Math.random() * allTypes.length);
+      let type = allTypes[rand];
+      allTypes.splice(rand, 1); // Delete one value so it won't repeat
+
+      let time = ['day', 'week'][Math.floor(Math.random() * 2)];
+      let theme = '';
+      ("Trending " + type + " " + time);
+
+      switch (type) {
+        case 'all':
+          theme += 'Trends';
+          break;
+        case 'movie':
+          theme += 'Trending movies ';
+          break;
+        case 'tv':
+          theme += 'Trending TV series ';
+          break;
+        case 'person':
+          theme += 'Trending people ';
+          break;
+        default:
+      }
+
+      theme += time == 'day' ? ' of the day' : ' of the week';
+      this.$store.state.homeThemes.push(theme);
+
+      axios.get(`https://api.themoviedb.org/3/trending/${type}/${time}?${ this.$store.state.api_key }`)
+        .then((response) => {
+          this.$store.state.homeResults[i] = response.data.results;
+          if (type == 'movie') {
+            this.$store.state.sliderMovies = response.data.results.slice(Math.max(20 - 3, 1));
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     }
   }
+}
+
+/*
+TO DOs
+
+MBDb APIs
+
+https://api.themoviedb.org/3  <-- base
+
+api_key=80ce5140be88a1814f46d46b0daf8b4b
+
+Image base for poster background
+
+https://image.tmdb.org/t/p/w500/mKBP1OCgCG0jw8DwVYlnYqVILtc.jpg
+https://image.tmdb.org/t/p/original/{{imgPath}}
+*/
+</script>
+
+<style lang="scss">
+* {
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+    color: $borderColor;
+    transition: color 0.5s;
+    &:hover {
+        color: $borderColorHover;
+    }
+}
+
+i {
+    color: $borderColor;
+    transition: color 0.5s;
+    &:hover {
+        color: $borderColorHover;
+    }
+}
+
+@media (min-width: $rwdTablet) {
+    i {
+        font-size: 2.5em;
+    }
+}
+@media (min-width: $rwdTabletLandscape) {
+    i {
+        font-size: 3em;
+    }
+}
+
+body,
+html {
+    padding: 0;
+    margin: 0;
+    font-family: 'Lato', sans-serif;
+    font-weight: bold;
+    // Mozilla
+    scrollbar-color: $borderColor black;
+    scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    z-index: 6;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background-color: #1a1b1c;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: $borderColor;
+}
+
+::selection {
+    color: white;
+    background: $borderColor;
+}
+
+#app {
+    background-color: $background;
+    min-height: 100vh;
+    color: white;
+    text-align: center;
 }
 </style>
