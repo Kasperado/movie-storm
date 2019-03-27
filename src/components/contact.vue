@@ -26,7 +26,6 @@ footer {
     background-color: $navColor;
     border-top: 2px $borderColor solid;
     div {
-        width: 50%;
         img {
             max-height: 96px;
             padding: 8px;
@@ -37,6 +36,9 @@ footer {
 @media (min-width: $rwdTablet) {
     footer {
         flex-direction: row;
+        div {
+            width: 50%;
+        }
     }
 }
 </style>

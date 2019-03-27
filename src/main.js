@@ -8,11 +8,6 @@ Vue.use(VueScrollTo)
 
 Vue.use(Router)
 
-Vue.prototype.$activateLoading = function (event) {
-  if(this.$route.name != event.target.parentElement.id && this.$route.name != event.target.id)
-      document.querySelector('.loading').style.opacity = '1';
-  }
-
 const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -31,6 +26,14 @@ const router = new Router({
       path: '/movie/:id',
       name: 'movie',
       component: () => import('./views/Movies.vue')
+    },{
+      path: '/tv/:id',
+      name: 'tv',
+      component: () => import('./views/TV.vue')
+    },{
+      path: '/person/:id',
+      name: 'person',
+      component: () => import('./views/Person.vue')
     },
     {
       path: '*',
@@ -41,7 +44,13 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  setTimeout(() => { next() }, 250)
+  if (store.state.ready) {
+    document.querySelector('.loading').style.opacity = '1';
+  } else {
+    store.state.ready = true;
+  }
+
+  setTimeout(() => { next() }, 400)
 })
 
 router.afterEach(() => {

@@ -1,5 +1,5 @@
 <template lang="html">
-    <div class="tilt" ref="tiltedpls">
+    <div class="tilt">
       <span>{{text}}</span>
     </div>
 </template>
@@ -43,21 +43,46 @@ export default {
     align-items: center;
     background-color: $navColor;
     color: $borderColor;
-    height: 120px;
+    height: 80px;
     position: relative;
     border-top: 2px solid $borderColor;
     border-bottom: 2px solid $borderColor;
     margin: 2% 0;
     span {
-        font-size: 1.5em;
+        font-size: 1em;
     }
-    /*img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        object-fit: cover;
-        width: 100%;
-        height: 100%;
-    }*/
+}
+
+@media (min-width: $rwdTablet) {
+    .tilt {
+        height: 90px;
+        span {
+            font-size: 1.1em;
+        }
+    }
+}
+@media (min-width: $rwdTabletLandscape) {
+    .tilt {
+        height: 100px;
+        span {
+            font-size: 1.25em;
+        }
+    }
+}
+@media (min-width: $rwdLaptop) {
+    .tilt {
+        height: 110px;
+        span {
+            font-size: 1.35em;
+        }
+    }
+}
+@media (min-width: $rwdDesktop) {
+    .tilt {
+        height: 120px;
+        span {
+            font-size: 1.5em;
+        }
+    }
 }
 </style>

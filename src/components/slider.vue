@@ -10,6 +10,7 @@
         <div @click="changeSlide(0, true)" class="counter_btn counter_btn-active"></div>
         <div @click="changeSlide(1, true)" class="counter_btn"></div>
         <div @click="changeSlide(2, true)" class="counter_btn"></div>
+        <div @click="changeSlide(3, true)" class="counter_btn"></div>
       </div>
     </div>
 
@@ -17,16 +18,16 @@
       <i class="fas fa-chevron-right"></i>
     </div>
 
-    <div class="movie_hero" v-for='(m, index) in heroMovies' :style=" index == 0 ? 'opacity: 1' : 'opacity: 0'">
-        <router-link :to="{ name: 'movie', params: {id : m.id } }" id='movie'>
-          <img :src="'https://image.tmdb.org/t/p/original/' + m.backdrop_path" :alt="m.title">
+    <div class="movie_hero" v-for='(r, index) in heroMovies' :style=" index == 0 ? 'opacity: 1' : 'opacity: 0'">
+        <router-link :to="{ name: getCategory(r), params: {id : r.id } }" :id='getCategory(r)'>
+          <img :src="'https://image.tmdb.org/t/p/original/' + r.backdrop_path" :alt="r.title || r.name">
         </router-link>
       <div class="movie_info">
         <div class="title">
-          {{m.title}}
+          {{r.title || r.name}}
         </div>
-        <div class="score">
-          {{m.vote_average.toString().length > 1 ? m.vote_average + ' &#9733;' : m.vote_average + '.0 &#9733;'}}
+        <div class="info">
+          {{ getType(r) + " | " + (r.vote_average.toString().length > 1 ? r.vote_average + ' &#9733;' : r.vote_average + '.0 &#9733;')}}
         </div>
       </div>
     </div>
@@ -50,6 +51,24 @@ export default {
   },
   methods: {
 
+    getCategory(r) {
+      if (r.title != null) { // Movie ?
+        return 'movie';
+      } else if (r.first_air_date != null) { // TV Series ?
+        return 'tv';
+      } else { // Person
+        return 'person';
+      }
+    },
+
+    getType(r) {
+      if (r.title != null) {
+        return 'Movie';
+      } else {
+        return 'TV series';
+      }
+    },
+
     changeSlide(num, selected) {
       document.querySelectorAll('.movie_hero')[this.activeSlider].style.opacity = '0';
       document.querySelectorAll('.counter_btn')[this.activeSlider].classList.remove('counter_btn-active');
@@ -58,10 +77,10 @@ export default {
         this.activeSlider = num;
       } else {
 
-        if ((this.activeSlider + num) > 2) {
+        if ((this.activeSlider + num) > 3) {
           this.activeSlider = 0;
         } else if ((this.activeSlider + num) < 0) {
-          this.activeSlider = 2;
+          this.activeSlider = 3;
         } else {
           this.activeSlider += num;
         }
@@ -99,6 +118,7 @@ export default {
     background-color: #123;
     border-top: 2px solid $borderColor;
     border-bottom: 2px solid $borderColor;
+    text-align: left;
     .movie_hero {
         position: absolute;
         top: 0;
@@ -116,15 +136,23 @@ export default {
             width: 100%;
             height: 100%;
         }
+        .movie_info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            margin: 16px;
+            z-index: 4;
+            .title {
+                font-size: 20px;
+                text-shadow: 2px 2px black;
+            }
+            .info {
+                font-size: 12px;
+                text-shadow: 2px 2px black;
+            }
+        }
     }
-    .movie_info {
-        position: absolute;
-        background-color: rgba(0, 0, 0, 0.5);
-        padding: 4px;
-        bottom: 0;
-        left: 0;
-        z-index: 4;
-    }
+
     i {
         font-size: 2em;
     }
@@ -136,14 +164,14 @@ export default {
         cursor: pointer;
         z-index: 4;
         height: 100%;
-        min-width: 50px;
+        padding: 8px;
         transition: background-color 0.5s;
         &:hover {
             background-color: rgba(255,255,255,0.1);
         }
     }
     .counter_container {
-        display: flex;
+        display: none;
         justify-content: center;
         align-items: flex-end;
         height: 100%;
@@ -175,14 +203,43 @@ export default {
 
 @media (min-width: $rwdTablet) {
     .slider {
+        max-height: 55vh;
+        .movie_hero {
+            .movie_info {
+                margin: 20px;
+                .title {
+                    font-size: 28px;
+
+                }
+                .info {
+                    font-size: 15px;
+                }
+            }
+        }
+
         i {
             font-size: 2.5em;
         }
     }
 }
 @media (min-width: $rwdTabletLandscape) {
+
     .slider {
-        max-height: 50vh;
+        max-height: 65vh;
+        .movie_hero {
+            .movie_info {
+                margin: 20px;
+                .title {
+                    font-size: 36px;
+                }
+                .info {
+                    font-size: 16px;
+                }
+            }
+        }
+        .counter_container {
+            display: flex;
+        }
         i {
             font-size: 3em;
         }
@@ -191,11 +248,34 @@ export default {
 @media (min-width: $rwdLaptop) {
     .slider {
         max-height: 75vh;
+        .movie_hero {
+            .movie_info {
+                margin: 20px;
+                .title {
+                    font-size: 42px;
+                }
+                .info {
+                    font-size: 18px;
+                }
+            }
+        }
     }
 }
 @media (min-width: $rwdDesktop) {
+
     .slider {
         max-height: 85vh;
+        .movie_hero {
+            .movie_info {
+                margin: 28px;
+                .title {
+                    font-size: 48px;
+                }
+                .info {
+                    font-size: 20px;
+                }
+            }
+        }
     }
 }
 </style>

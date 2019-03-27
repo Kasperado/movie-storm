@@ -21,7 +21,7 @@ export default {
     top: calc(10vh + 2px);
     height: calc(90vh - 2px);
     background-color: #323334;
-    transition: opacity 0.25s;
+    transition: opacity 0.4s;
     opacity: 1;
     pointer-events: none;
     img {

@@ -37,9 +37,6 @@ export default {
       ("Trending " + type + " " + time);
 
       switch (type) {
-        case 'all':
-          theme += 'Trends';
-          break;
         case 'movie':
           theme += 'Trending movies ';
           break;
@@ -58,8 +55,8 @@ export default {
       axios.get(`https://api.themoviedb.org/3/trending/${type}/${time}?${ this.$store.state.api_key }`)
         .then((response) => {
           this.$store.state.homeResults[i] = response.data.results;
-          if (type == 'movie') {
-            this.$store.state.sliderMovies = response.data.results.slice(Math.max(20 - 3, 1));
+          if (type == 'movie' || type == 'tv') {
+            this.$store.state.sliderMovies.push(...response.data.results.slice(Math.max(20 - 2, 1)));
           }
         })
         .catch((e) => {

@@ -1,7 +1,7 @@
 <template lang="html">
   <section>
-    <p>{{ this.results.title }}</p>
-    <img :src="this.results.backdrop_path" alt="">
+    <p>{{ this.results.name }}</p>
+    <img :src="this.results.profile_path" alt="">
   </section>
 </template>
 
@@ -9,19 +9,18 @@
 import axios from 'axios'
 
 export default {
-  name: 'movies',
+  name: 'person',
   data() {
     return {
       results: {
-        backdrop_path: ''
+        profile_path: ''
       }
     }
   },
   mounted() {
-
-    axios.get(`https://api.themoviedb.org/3/movie/${ this.$route.params.id }?${ this.$store.state.api_key }`)
+    axios.get(`https://api.themoviedb.org/3/person/${ this.$route.params.id }?${ this.$store.state.api_key }`)
       .then((response) => {
-        response.data.backdrop_path = 'https://image.tmdb.org/t/p/original/' + response.data.backdrop_path;
+        response.data.profile_path = 'https://image.tmdb.org/t/p/original/' + response.data.profile_path;
         this.results = response.data;
       })
       .catch((e) => {

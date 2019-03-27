@@ -6,14 +6,16 @@
     <div class="movies_container" ref='mov'>
 
       <div class="movie_preview" v-for="r in this.filteredResults" :key="r.id">
-        <router-link :to="{ name: 'movie', params: {id : r.id } }" id='movie'>
-          <img :src="'https://image.tmdb.org/t/p/w500/'+(r.poster_path || r.profile_path)" :alt="r.title || r.original_name" :title='r.overview'>
+        <router-link :to="{ name: getCategory(r), params: {id : r.id } }">
+          <img :src="'https://image.tmdb.org/t/p/w500/'+(r.poster_path || r.profile_path)" :alt="r.title || r.original_name" title='Click for view'>
         </router-link>
       <span>{{r.title || r.original_name || r.name}}</span>
-      <div class="year" v-if='(r.release_date || r.first_air_date)'>
-        {{ ( (r.release_date || r.first_air_date).substring(0,4) )}}
+      <div class="year" v-if='r.gender || r.release_date || r.first_air_date'>
+        {{ getYear(r) || (r.gender == 1 ? 'Female' : 'Male') }}
       </div>
-      <div class="score" v-if='r.vote_average'>{{ r.vote_average.toString().length > 1 ? r.vote_average + ' &#9733;' : r.vote_average + '.0 &#9733;'}}</div>
+      <div class="score" v-if='r.vote_average || r.known_for_department'>
+        {{  getJob(r) || (r.vote_average.toString().length > 1 ? r.vote_average + ' &#9733;' : r.vote_average + '.0 &#9733;') }}
+      </div>
       </div>
 
     </div>
@@ -44,6 +46,33 @@ export default {
       let value = document.querySelector('.movie_preview').offsetWidth;
       value += parseInt(window.getComputedStyle(document.querySelector('.movie_preview')).getPropertyValue('margin-left')) * 2;
       this.$refs.mov.scrollBy(value * direction, 0);
+    },
+
+    getCategory(r) {
+      if (r.title != null) { // Movie ?
+        return 'movie';
+      } else if (r.first_air_date != null) { // TV Series ?
+        return 'tv';
+      } else { // Person
+        return 'person';
+      }
+    },
+
+    getJob(r) {
+      if (r.known_for_department == 'Acting') {
+        return r.gender == 1 ? 'Actress' : 'Actor';
+      } else if (r.known_for_department == 'Directing') {
+        return r.gender == 1 ? 'Directress' : 'Director';
+      } else {
+        return null;
+      }
+    },
+
+    getYear(r) {
+      if (r.release_date != null || r.first_air_date != null)
+        return (r.release_date || r.first_air_date).substring(0, 4);
+      else
+        return null;
     }
   }
 }
@@ -56,7 +85,6 @@ export default {
 
 .container {
     display: flex;
-    max-width: 1400px;
     position: relative;
     margin: auto;
     width: 100%;
@@ -68,15 +96,17 @@ export default {
         align-items: center;
         cursor: pointer;
         z-index: 4;
-        min-height: 50px;
-        min-width: 50px;
+        width: 10%;
+        i {
+            max-width: 100%;
+        }
     }
     .movies_container {
         display: flex;
         overflow: hidden;
         scroll-behavior: smooth;
         flex-shrink: 0;
-        width: 90%;
+        width: 80%;
         .movie_preview {
             display: flex;
             flex-shrink: 0;
@@ -110,15 +140,25 @@ export default {
                 user-select: none;
                 max-width: 100%;
                 min-height: 300px;
-                cursor: pointer;
-                transition: filter 0.4s;
-                filter: brightness(0.8);
-                &:hover {
-                    filter: brightness(1.1);
-                }
+
             }
         }
     }
 
 }
+
+@media (min-width: $rwdTablet) {}
+@media (min-width: $rwdTabletLandscape) {}
+@media (min-width: $rwdLaptop) {
+
+    img {
+        cursor: pointer;
+        transition: filter 0.4s;
+        filter: brightness(0.8);
+        &:hover {
+            filter: brightness(1.1);
+        }
+    }
+}
+@media (min-width: $rwdDesktop) {}
 </style>

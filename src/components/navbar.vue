@@ -3,8 +3,8 @@
   <div class="nav_background">
     <div class="nav_content" :style="{'max-width': navWidth + 'px' }">
 
-      <div class="logo" @click="activateLoading">
-        <router-link to='/' id='home'>
+      <div class="logo">
+        <router-link to='/'>
           <div v-if='logo' class="img_flex">
             <img :src="logoSrc" alt="logo" />
           </div>
@@ -16,9 +16,9 @@
         <input id="searchbox" name="searchbox" placeholder="Search" v-model="searchValue" autocomplete='off' />
       </div>
 
-      <ul @click="activateLoading">
+      <ul>
         <li v-for="n in navElements" :key="n.name" @click="toggleMenu">
-          <router-link :to='n.url' class="list_link" :id="n.url.substring(1) || 'home'">{{n.name}}</router-link>
+          <router-link :to='n.url' class="list_link">{{n.name}}</router-link>
         </li>
       </ul>
 
@@ -121,12 +121,7 @@ export default {
         document.querySelector('.nav_background').classList.remove('navbar_scrolled');
       }
 
-    },
-
-    activateLoading(event) {
-      this.$activateLoading(event);
     }
-
   },
   mounted() {
     this.scrollFun();
