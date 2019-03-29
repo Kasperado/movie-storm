@@ -13,7 +13,7 @@
       </div>
 
       <div class="searchbox">
-        <input id="searchbox" name="searchbox" placeholder="Search" v-model="searchValue" autocomplete='off' />
+        <input id="searchbox" name="searchbox" placeholder="Search" v-model="searchValue" autocomplete='off' v-on:keyup.enter='submitSearch' />
       </div>
 
       <ul>
@@ -23,7 +23,7 @@
       </ul>
 
       <div @click="toggleMenu" class="mobile_menu">
-        <img :src="require(`@/assets/${why}`)" alt="menu">
+        <img :src="require(`@/assets/hamburger.svg`)" alt="menu">
       </div>
 
     </div>
@@ -39,8 +39,7 @@ export default {
     return {
       navOpen: false,
       navBusy: false,
-      searchValue: '',
-      why: 'hamburger.svg'
+      searchValue: ''
     }
   },
   props: {
@@ -121,6 +120,15 @@ export default {
         document.querySelector('.nav_background').classList.remove('navbar_scrolled');
       }
 
+    },
+
+    submitSearch() {
+      this.$router.push({
+        name: 'search',
+        params: {
+          value: this.searchValue
+        }
+      });
     }
   },
   mounted() {

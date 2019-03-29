@@ -1,11 +1,17 @@
 <template>
 <section>
   <slider></slider>
-  <discovery v-for='(r,index) in this.homeResults' :key="'discov'+index" :text="homeThemes[index]" :reverse='index%2==0?true:false' :results='homeResults[index]'></discovery>
+  <discovery :text="homeThemes[0]" :reverse='true' :results='homeResults[0]'></discovery>
+  <discovery :text="homeThemes[1]" :reverse='false' :results='homeResults[1]'></discovery>
+  <discovery :text="homeThemes[2]" :reverse='true' :results='homeResults[2]'></discovery>
 </section>
 </template>
 
 <script>
+import {
+  mapState
+} from 'vuex';
+
 import slider from '@/components/slider.vue'
 import discovery from '@/components/discovery.vue'
 

@@ -7,10 +7,7 @@
 
     <div class="counter_container">
       <div class="counter">
-        <div @click="changeSlide(0, true)" class="counter_btn counter_btn-active"></div>
-        <div @click="changeSlide(1, true)" class="counter_btn"></div>
-        <div @click="changeSlide(2, true)" class="counter_btn"></div>
-        <div @click="changeSlide(3, true)" class="counter_btn"></div>
+        <div v-for='(btn, index) in this.heroMovies' @click="changeSlide(index, true)" :class="'counter_btn ' + (index == 0 ? 'counter_btn-active' : '')"></div>
       </div>
     </div>
 
@@ -18,7 +15,7 @@
       <i class="fas fa-chevron-right"></i>
     </div>
 
-    <div class="movie_hero" v-for='(r, index) in heroMovies' :style=" index == 0 ? 'opacity: 1' : 'opacity: 0'">
+    <div class="movie_hero" v-for='(r, index) in heroMovies' :style=" index == 0 ? 'opacity: 1' : 'opacity: 0'" :key="r.id">
         <router-link :to="{ name: getCategory(r), params: {id : r.id } }" :id='getCategory(r)'>
           <img :src="'https://image.tmdb.org/t/p/original/' + r.backdrop_path" :alt="r.title || r.name">
         </router-link>
@@ -27,7 +24,7 @@
           {{r.title || r.name}}
         </div>
         <div class="info">
-          {{ getType(r) + " | " + (r.vote_average.toString().length > 1 ? r.vote_average + ' &#9733;' : r.vote_average + '.0 &#9733;')}}
+          {{ getType(r) + " | " + (r.vote_average + (Number.isInteger(r.vote_average) ?  '.0' : '') + ' &#9733;')}}
         </div>
       </div>
     </div>
@@ -77,10 +74,10 @@ export default {
         this.activeSlider = num;
       } else {
 
-        if ((this.activeSlider + num) > 3) {
+        if ((this.activeSlider + num) > (this.heroMovies.length - 1)) {
           this.activeSlider = 0;
         } else if ((this.activeSlider + num) < 0) {
-          this.activeSlider = 3;
+          this.activeSlider = (this.heroMovies.length - 1);
         } else {
           this.activeSlider += num;
         }

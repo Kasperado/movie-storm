@@ -5,7 +5,7 @@
     <input type="search" v-model='searchValue' @input='handleInput()'>
 
     <p style="font-size: 28px;">Search results:</p>
-    <previews :results='this.results'></previews>
+    <previews v-if='searchValue' :results='this.results'></previews>
   </section>
 </template>
 

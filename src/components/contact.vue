@@ -23,6 +23,7 @@ footer {
     align-items: center;
     flex-direction: column;
     width: 100%;
+    min-height: 10vh;
     background-color: $navColor;
     border-top: 2px $borderColor solid;
     div {

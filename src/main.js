@@ -23,6 +23,11 @@ const router = new Router({
       component: () => import('./views/Advanced.vue')
     },
     {
+      path: '/search/:value/:page?',
+      name: 'search',
+      component: () => import('./views/Searchbox.vue')
+    },
+    {
       path: '/movie/:id',
       name: 'movie',
       component: () => import('./views/Movies.vue')
@@ -47,7 +52,7 @@ router.beforeEach((to, from, next) => {
   if (store.state.ready) {
     document.querySelector('.loading').style.opacity = '1';
   } else {
-    store.state.ready = true;
+    store.commit('readyUp');
   }
 
   setTimeout(() => { next() }, 400)

@@ -1,7 +1,7 @@
 <template lang="html">
   <section>
     <tilted :text="this.text" :reverse="this.reverse"></tilted>
-    <previews :results='this.watchedResults'></previews>
+    <previews :results='this.results'></previews>
   </section>
 </template>
 
@@ -27,11 +27,6 @@ export default {
     results: {
       type: Array,
       default: () => []
-    }
-  },
-  computed: {
-    watchedResults: function() {
-      return this.results;
     }
   }
 }

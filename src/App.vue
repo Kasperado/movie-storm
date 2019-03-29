@@ -3,7 +3,7 @@
   <navbar :navWidth="1600" title="Movie Storm" :navElements="[{name: 'Discover', url: '/'},{name: 'Advanced Search', url: '/advanced'}]" :backgroundOnScroll="false" v-on:inputTrigger="handleInput($event)" mobileSrc="@/assets/hamburger.svg">
   </navbar>
   <loading></loading>
-  <router-view />
+  <router-view v-if='axiosDone' :key="$route.fullPath" />
   <contact></contact>
 </div>
 </template>
@@ -21,6 +21,20 @@ export default {
     navbar,
     loading,
     contact
+  },
+  data() {
+    return {
+      axiosDone: false
+    }
+  },
+  methods: {
+
+    axiosReady() {
+      if (this.$store.getters.isReady) {
+        this.axiosDone = true;
+      }
+    }
+
   },
   mounted() {
 
@@ -50,14 +64,20 @@ export default {
       }
 
       theme += time == 'day' ? ' of the day' : ' of the week';
-      this.$store.state.homeThemes.push(theme);
+      this.$store.commit('addHomeThemes', theme);
 
       axios.get(`https://api.themoviedb.org/3/trending/${type}/${time}?${ this.$store.state.api_key }`)
         .then((response) => {
-          this.$store.state.homeResults[i] = response.data.results;
+          let r = response.data.results;
+          console.log(response.headers);
+          this.$store.commit('addHomeResults', {
+            r,
+            i
+          });
           if (type == 'movie' || type == 'tv') {
-            this.$store.state.sliderMovies.push(...response.data.results.slice(Math.max(20 - 2, 1)));
+            this.$store.commit('addSliderMovie', response.data.results.slice(Math.max(20 - 2, 1)));
           }
+          this.axiosReady();
         })
         .catch((e) => {
           console.log(e);
