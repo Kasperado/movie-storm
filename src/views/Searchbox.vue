@@ -1,5 +1,5 @@
 <template lang="html">
-  <section >
+  <section>
     <h1>Search results:</h1>
      <div class="results_container" v-if='this.results'>
        <preview v-for="r in this.filteredResults" :data="r"></preview>
@@ -47,6 +47,7 @@ export default {
             page: (currentPage + direction)
           }
         });
+        window.scrollTo(0, 0);
       }
 
     }
@@ -81,45 +82,9 @@ section {
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
-    width: 80%;
+    width: 100%;
+    max-width: 1200px;
     margin: auto;
-}
-
-.movie_preview {
-    display: flex;
-    flex-shrink: 0;
-    position: relative;
-    flex-direction: column;
-    width: 200px;
-    background-color: $navColor;
-    margin: 6px;
-    span {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 8px 4px;
-        height: 100%;
-    }
-    .score {
-        position: absolute;
-        top: 0;
-        right: 0;
-        padding: 4px;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-    .year {
-        position: absolute;
-        top: 0;
-        left: 0;
-        padding: 4px;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-    img {
-        user-select: none;
-        max-width: 100%;
-        min-height: 300px;
-
-    }
 }
 
 .direction_container {
@@ -143,6 +108,27 @@ section {
     .disabled {
         background-color: gray;
         pointer-events: none;
+    }
+}
+
+@media (min-width: $rwdTablet) {
+    .results_container {
+        width: 95%;
+    }
+}
+@media (min-width: $rwdTabletLandscape) {
+    .results_container {
+        width: 90%;
+    }
+}
+@media (min-width: $rwdLaptop) {
+    .results_container {
+        width: 85%;
+    }
+}
+@media (min-width: $rwdDesktop) {
+    .results_container {
+        width: 80%;
     }
 }
 </style>

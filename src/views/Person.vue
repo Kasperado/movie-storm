@@ -12,10 +12,19 @@
 
     <div class="movie_info">
       <div class="main_info">
-        <h1>Known for:</h1>
-        <previews v-if='this.movies_with.total_results' :results='this.movies_with.results'></previews>
-        <div v-else>
-          <span>Nothing found</span>
+        <div class="as_cast">
+          <h1>Known for being in:</h1>
+          <previews v-if='this.movies_with_as_cast.total_results' :results='this.movies_with_as_cast.results'></previews>
+          <div v-else>
+            <span>Nothing found</span>
+          </div>
+        </div>
+        <div class="as_crew">
+          <h1>Known for working on:</h1>
+          <previews v-if='this.movies_with_as_crew.total_results' :results='this.movies_with_as_crew.results'></previews>
+          <div v-else>
+            <span>Nothing found</span>
+          </div>
         </div>
       </div>
 
@@ -55,10 +64,12 @@ export default {
       results: {
         profile_path: ''
       },
-      movies_with: {
+      movies_with_as_cast: {
         total_results: 0
       },
-
+      movies_with_as_crew: {
+        total_results: 0
+      },
     }
   },
   components: {
@@ -74,9 +85,17 @@ export default {
         console.log(e);
       });
 
+    axios.get(`https://api.themoviedb.org/3/discover/movie?with_cast=${ this.$route.params.id }&${ this.$store.state.api_key }`)
+      .then((response) => {
+        this.movies_with_as_cast = response.data;
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
     axios.get(`https://api.themoviedb.org/3/discover/movie?with_crew=${ this.$route.params.id }&${ this.$store.state.api_key }`)
       .then((response) => {
-        this.movies_with = response.data;
+        this.movies_with_as_crew = response.data;
       })
       .catch((e) => {
         console.log(e);

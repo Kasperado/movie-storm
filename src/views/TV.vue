@@ -128,7 +128,7 @@ export default {
       .catch((e) => {
         console.log(e);
       });
-    //Get movie people
+    //Get tv people
     axios.get(`https://api.themoviedb.org/3/tv/${ this.$route.params.id }/credits?${ this.$store.state.api_key }`)
       .then((response) => {
         this.people = response.data;
@@ -240,4 +240,9 @@ section {
         }
     }
 }
+
+@media (min-width: $rwdTablet) {}
+@media (min-width: $rwdTabletLandscape) {}
+@media (min-width: $rwdLaptop) {}
+@media (min-width: $rwdDesktop) {}
 </style>

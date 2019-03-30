@@ -66,7 +66,10 @@
 
       <div class="similar_movies" v-if='this.similar'>
         <h1>You might also like:</h1>
-        <previews :results='this.similar'></previews>
+        <previews v-if='this.similar.length' :results='this.similar'></previews>
+        <p v-else>
+          Nothing silimiar found
+        </p>
       </div>
     </div>
 

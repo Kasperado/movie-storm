@@ -4,9 +4,7 @@
       <i class="fas fa-chevron-left"></i>
     </div>
     <div class="movies_container" ref='mov'>
-
       <preview v-for="r in this.filteredResults" :data="r"></preview>
-
     </div>
     <div @click="scrollPreviews(1)" class="arr_left">
       <i class="fas fa-chevron-right"></i>
