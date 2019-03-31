@@ -49,7 +49,7 @@ export default {
     },
     responsiveWidth: {
       type: Number,
-      default: 824,
+      default: 768,
     },
     backgroundOnScroll: {
       type: Boolean,
@@ -76,6 +76,8 @@ export default {
       if (!this.navBusy && screen.width <= this.responsiveWidth) {
         let timer = 0;
         if (this.navOpen) {
+
+          document.querySelector('.searchbox').classList.remove("searchbox_active");
           [].slice.call(document.querySelectorAll('li'), 0).reverse().forEach((e) => {
             setTimeout(() => {
               e.classList.remove("list_element_active");
@@ -83,6 +85,8 @@ export default {
             timer += 100;
           });
         } else {
+
+          document.querySelector('.searchbox').classList.add("searchbox_active");
           document.querySelectorAll('li').forEach((e) => {
             setTimeout(() => {
               e.classList.add("list_element_active");
@@ -90,6 +94,9 @@ export default {
             timer += 100;
           });
         }
+
+
+
         this.navBusy = true;
 
         setTimeout(() => {
@@ -123,6 +130,8 @@ export default {
     },
 
     submitSearch() {
+      document.querySelector('input').blur();
+      this.toggleMenu();
       this.$router.push({
         name: 'search',
         params: {
@@ -142,11 +151,19 @@ export default {
 <style lang="scss" scoped>
 .searchbox {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: fixed;
+    bottom: 0;
+    margin: auto;
+    width: 100%;
+    align-items: center;
+    background-color: $navColor;
+    border-top: 2px $borderColor solid;
+    height: $navHeightMobile;
+    transition: transform 0.4s;
+    transform: translate(0, 100%);
     input {
-
         min-width: 200px;
         width: 10vw;
         margin: auto;
@@ -158,7 +175,6 @@ export default {
         border: 2px solid $borderColor;
         color: white;
         font-style: italic;
-
         &:focus {
             outline: none;
             border: 2px solid $borderColorHover;
@@ -208,10 +224,12 @@ export default {
             }
         }
         .mobile_menu {
-            height: 100%;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            min-width: 20%;
             img {
                 padding: 10px;
-                height: 100%;
             }
         }
     }
@@ -233,7 +251,7 @@ ul {
         width: 100%;
         cursor: pointer;
         border-bottom: 2px solid $borderColor;
-        transition: all 0.4s;
+        transition: transform 0.4s;
         background-color: $navColor;
         a {
             padding: 8px;
@@ -245,7 +263,11 @@ ul {
 }
 
 .list_element_active {
-    transform: translate(-100%,0);
+    transform: translate(-100%, 0);
+}
+
+.searchbox_active {
+    transform: translate(0, 0);
 }
 
 .navbar_scrolled {
@@ -267,6 +289,20 @@ a,
 img,
 p {
     transition: 0.4s;
+}
+
+@media (min-width: $rwdTablet) {
+    .searchbox {
+        transform: translate(0,0);
+        height: auto;
+        background: none;
+        position: inherit;
+        border: none;
+        width: auto;
+        input {
+            max-width: 200px;
+        }
+    }
 }
 
 @media (min-width: $rwdTabletLandscape) {
@@ -305,4 +341,7 @@ p {
     }
 
 }
+
+@media (min-width: $rwdLaptop) {}
+@media (min-width: $rwdDesktop) {}
 </style>

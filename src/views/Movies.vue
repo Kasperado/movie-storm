@@ -43,35 +43,9 @@
 
       </div>
 
-
     </div>
-    <div class="after_info">
 
-      <div class="movie_reviews" v-if='this.reviews.length'>
-        <h1>Reviews:</h1>
-        <div class="review" v-for="r in this.reviews">
-          <div class="user_info">
-            <span>{{ r.author }}</span>
-            <a :href="r.url" target="_blank"><span>{{ r.id }}</span></a>
-          </div>
-          <div class="review_content">
-            <p>{{ r.content }}</p>
-          </div>
-        </div>
-
-      </div>
-      <div v-else>
-        <h1>No Reviews</h1>
-      </div>
-
-      <div class="similar_movies" v-if='this.similar'>
-        <h1>You might also like:</h1>
-        <previews v-if='this.similar.length' :results='this.similar'></previews>
-        <p v-else>
-          Nothing silimiar found
-        </p>
-      </div>
-    </div>
+    <afterInfo :reviews_results='this.reviews' :similar_results='this.similar'  />
 
   </section>
 </template>
@@ -80,11 +54,13 @@
 import axios from 'axios'
 
 import previews from '@/components/discovery/previews.vue'
+import afterInfo from '@/components/afterInfo/this.vue'
 
 export default {
   name: 'movies',
   components: {
-    previews
+    previews,
+    afterInfo
   },
   data() {
     return {
@@ -92,7 +68,7 @@ export default {
         backdrop_path: '',
       },
       people: null,
-      similar: null,
+      similar: [],
       reviews: []
     }
   },
@@ -158,7 +134,7 @@ section {
 }
 
 .parallax {
-    min-height: 90vh;
+    min-height: 88vh;
     background-attachment: fixed;
     background-position: top;
     background-repeat: no-repeat;
@@ -177,24 +153,25 @@ section {
 .movie_info {
     border-top: 2px $borderColor solid;
     display: flex;
-    flex-direction: row;
-    text-align: left;
+    flex-direction: column;
+    text-align: center;
     width: 100%;
     span {
         font-weight: 400;
     }
     .main_info {
-        width: 70%;
-        padding: 14px;
+        width: 100%;
+        padding: 8px;
         .overview {
-            width: 80%;
+            width: 90%;
+            margin: auto;
             font-weight: 400;
         }
     }
     .more_info {
-        padding: 14px;
-        width: 30%;
-        border-left: 2px $borderColor solid;
+        padding: 8px;
+        width: 100%;
+        border-top: 2px $borderColor solid;
         .companies {
             img {
                 max-width: 30%;
@@ -203,35 +180,44 @@ section {
     }
 }
 
-.after_info {
-    border-top: 2px $borderColor solid;
-    .movie_reviews {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        .review {
-            display: flex;
-            flex-direction: column;
-            width: 80%;
-            max-width: 1200px;
-            margin: auto;
-
-            .user_info {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 12px;
-                border-bottom: 2px $borderColor solid;
-                background-color: $navColor;
-                margin-top: 12px;
+@media (min-width: $rwdTablet) {
+    .movie_info {
+        flex-direction: row;
+        text-align: left;
+        .main_info {
+            width: 65%;
+            padding: 14px;
+            .overview {
+                margin: inherit;
+                width: 80%;
             }
-            .review_content {
-                background-color: $navColor;
-                font-weight: 400;
-                padding: 0 8px;
-                text-align: left;
-            }
+        }
+        .more_info {
+            padding: 14px;
+            width: 35%;
+            border: none;
+            border-left: 2px $borderColor solid;
         }
     }
 }
+@media (min-width: $rwdTabletLandscape) {
+    .parallax {
+        min-height: 90vh;
+    }
+
+    .movie_info {
+
+        .main_info {
+            width: 70%;
+        }
+        .more_info {
+            padding: 14px;
+            width: 30%;
+            border: none;
+            border-left: 2px $borderColor solid;
+        }
+    }
+}
+@media (min-width: $rwdLaptop) {}
+@media (min-width: $rwdDesktop) {}
 </style>

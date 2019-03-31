@@ -124,17 +124,6 @@ i {
     }
 }
 
-@media (min-width: $rwdTablet) {
-    i {
-        font-size: 2.5em;
-    }
-}
-@media (min-width: $rwdTabletLandscape) {
-    i {
-        font-size: 3em;
-    }
-}
-
 body,
 html {
     padding: 0;

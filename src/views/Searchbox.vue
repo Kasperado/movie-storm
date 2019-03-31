@@ -1,11 +1,10 @@
 <template lang="html">
   <section>
     <h1>Search results:</h1>
-     <div class="results_container" v-if='this.results'>
-       <preview v-for="r in this.filteredResults" :data="r"></preview>
-     </div>
 
-     <div class="direction_container" v-if='this.results'>
+    <searchResults :data='this.results.results' />
+
+     <div class="direction_container" v-if='this.results.results.length'>
 
        <div :class="'go' + ( (this.$route.params.page || 1) == 1 ? ' disabled' : '')" @click='changePage(-1)'>
          <i class="fas fa-chevron-left"></i>
@@ -17,23 +16,28 @@
          <i class="fas fa-chevron-right"></i>
        </div>
      </div>
+     <div v-else>
+       <span>Nothing found</span>
+     </div>
   </section>
 </template>
 
 <script>
 import axios from 'axios'
 
-import preview from '@/components/preview.vue'
+import searchResults from '@/components/searchResults.vue'
 
 export default {
   name: 'Searchbox',
   data() {
     return {
-      results: null
+      results: {
+        results: []
+      }
     };
   },
   components: {
-    preview
+    searchResults
   },
   methods: {
 

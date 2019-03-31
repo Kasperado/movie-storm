@@ -2,37 +2,38 @@
   <section>
 
     <p>name search, newest, by date/year, by actors, </p>
-    <input type="search" v-model='searchValue' @input='handleInput()'>
+    <input type="search" v-model='searchValue' v-on:keyup.enter='handleInput' placeholder="Advanced search">
 
     <p style="font-size: 28px;">Search results:</p>
-    <previews v-if='searchValue' :results='this.results'></previews>
+    <searchResults :data='this.results.results' />
   </section>
 </template>
 
 <script>
 import axios from 'axios'
-import debounce from 'lodash.debounce'
 
-import previews from '@/components/discovery/previews.vue'
+import searchResults from '@/components/searchResults.vue'
 
 export default {
   name: 'advancedSearch',
   components: {
-    previews
+    searchResults
   },
   data() {
     return {
-      results: [],
+      results: {
+        results: []
+      },
       searchValue: ''
-    };
+    }
   },
   methods: {
-    handleInput: debounce(function(ev) {
-      if (ev !== '') {
-        axios.get(`https://api.themoviedb.org/3/search/movie?api_key=80ce5140be88a1814f46d46b0daf8b4b&language=en-US&page=1&include_adult=false&query=
-${this.searchValue}`)
+
+    handleInput() {
+      if (this.searchValue !== '') {
+        axios.get(`https://api.themoviedb.org/3/search/movie?language=en-US&query=${this.searchValue}&${ this.$store.state.api_key }&page=${ (this.$route.params.page || 1) }`)
           .then((response) => {
-            this.results = response.data.results;
+            this.results = response.data;
           })
           .catch((e) => {
             console.log(e);
@@ -40,7 +41,8 @@ ${this.searchValue}`)
       } else {
         this.results = [];
       }
-    }, 500)
+    }
+
   }
 }
 
@@ -63,5 +65,53 @@ week	View the trending list for the week.
 <style lang="scss" scoped>
 section {
     min-height: 80vh;
+}
+
+input {
+    min-width: 200px;
+    width: 10vw;
+    margin: auto;
+    padding: 10px;
+    border-radius: 16px;
+    border: none;
+    transition: border 0.4s;
+    background-color: #191817;
+    border: 2px solid $borderColor;
+    color: white;
+    font-style: italic;
+    &:focus {
+        outline: none;
+        border: 2px solid $borderColorHover;
+    }
+}
+
+.results_container {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+@media (min-width: $rwdTablet) {
+    .results_container {
+        width: 95%;
+    }
+}
+@media (min-width: $rwdTabletLandscape) {
+    .results_container {
+        width: 90%;
+    }
+}
+@media (min-width: $rwdLaptop) {
+    .results_container {
+        width: 85%;
+    }
+}
+@media (min-width: $rwdDesktop) {
+    .results_container {
+        width: 80%;
+    }
 }
 </style>

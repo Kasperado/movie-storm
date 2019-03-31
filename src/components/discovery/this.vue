@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import tilted from '@/components/discovery/tilted.vue'
-import previews from '@/components/discovery/previews.vue'
+import tilted from './tilted.vue'
+import previews from './previews.vue'
 
 export default {
   name: 'discovery',

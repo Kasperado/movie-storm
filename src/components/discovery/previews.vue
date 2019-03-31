@@ -61,9 +61,11 @@ export default {
         align-items: center;
         cursor: pointer;
         z-index: 4;
-        width: 10%;
+        width: 15%;
+        font-size: 2em;
         i {
             max-width: 100%;
+
         }
     }
     .movies_container {
@@ -71,14 +73,34 @@ export default {
         overflow: hidden;
         scroll-behavior: smooth;
         flex-shrink: 0;
-        width: 80%;
-
+        width: 70%;
     }
-
 }
 
-@media (min-width: $rwdTablet) {}
-@media (min-width: $rwdTabletLandscape) {}
+@media (min-width: $rwdTablet) {
+    .container {
+        .arr_left,
+        .arr_right {
+            width: 10%;
+            i {
+                font-size: 2.5em;
+            }
+        }
+        .movies_container {
+            width: 80%;
+        }
+    }
+}
+@media (min-width: $rwdTabletLandscape) {
+    .container {
+        .arr_left,
+        .arr_right {
+            i {
+                font-size: 3em;
+            }
+        }
+    }
+}
 @media (min-width: $rwdLaptop) {}
 @media (min-width: $rwdDesktop) {}
 </style>
