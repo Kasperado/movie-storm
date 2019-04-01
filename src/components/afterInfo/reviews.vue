@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="movie_reviews" v-if='this.data.length'>
     <h1>Reviews:</h1>
-    <div class="review" v-for="r in this.data">
+    <div class="review" v-for="r in this.data" :key='r.id'>
       <div class="user_info">
         <span>{{ r.author }}</span>
         <a class="user_id" :href="r.url" target="_blank"><span>{{ r.id }}</span></a>
@@ -72,7 +72,7 @@ export default {
                 }
             }
             .review_content {
-                padding: 0 8px;
+                padding: 8px;
             }
         }
     }

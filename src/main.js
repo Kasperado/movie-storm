@@ -18,9 +18,9 @@ const router = new Router({
       component: () => import('./views/Home.vue')
     },
     {
-      path: '/advanced/:value?/:page?',
-      name: 'advanced',
-      component: () => import('./views/Advanced.vue')
+      path: '/discover/:value?/:page?',
+      name: 'discover',
+      component: () => import('./views/Discover.vue')
     },
     {
       path: '/search/:value/:page?',

@@ -33,7 +33,7 @@
 
         <div class="companies">
             <h2>Producers:</h2>
-          <span v-for='(c, index) in this.results.production_companies'>{{ (index == 0 ? c.name :  ', ' + c.name)}}</span>
+          <span v-for='(c, index) in this.results.production_companies' :key='c.name'>{{ (index == 0 ? c.name :  ', ' + c.name)}}</span>
         </div>
 
         <div class="date">
@@ -95,32 +95,32 @@ export default {
         response.data.backdrop_path = 'https://image.tmdb.org/t/p/original/' + response.data.backdrop_path;
         this.results = response.data;
       })
-      .catch((e) => {
-        console.log(e);
+      .catch(() => {
+
       });
     //Get movie people
     axios.get(`https://api.themoviedb.org/3/movie/${ this.$route.params.id }/credits?${ this.$store.state.api_key }`)
       .then((response) => {
         this.people = response.data;
       })
-      .catch((e) => {
-        console.log(e);
+      .catch(() => {
+
       });
     //Get reviews for movie
     axios.get(`https://api.themoviedb.org/3/movie/${ this.$route.params.id }/reviews?${ this.$store.state.api_key }`)
       .then((response) => {
         this.reviews = response.data.results;
       })
-      .catch((e) => {
-        console.log(e);
+      .catch(() => {
+
       });
     //Get similar movies
     axios.get(`https://api.themoviedb.org/3/movie/${ this.$route.params.id }/similar?${ this.$store.state.api_key }`)
       .then((response) => {
         this.similar = response.data.results;
       })
-      .catch((e) => {
-        console.log(e);
+      .catch(() => {
+
       });
 
   }

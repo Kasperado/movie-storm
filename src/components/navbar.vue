@@ -130,14 +130,16 @@ export default {
     },
 
     submitSearch() {
-      document.querySelector('input').blur();
-      this.toggleMenu();
-      this.$router.push({
-        name: 'search',
-        params: {
-          value: this.searchValue
-        }
-      });
+      if (this.searchValue !== '') {
+        document.querySelector('input').blur();
+        this.toggleMenu();
+        this.$router.push({
+          name: 'search',
+          params: {
+            value: this.searchValue
+          }
+        });
+      }
     }
   },
   mounted() {
