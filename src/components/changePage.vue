@@ -10,6 +10,7 @@
     <div :class="'go' +  ( (this.$route.params.page || 1) >= this.pages ? ' disabled' : '')" @click='changePage(1)'>
       <i class="fas fa-chevron-right"></i>
     </div>
+
   </div>
 </template>
 
@@ -17,7 +18,9 @@
 export default {
   name: "changePage",
   props: {
-    routeName: '',
+    routeName: {
+      default: ''
+    },
     pages: null
   },
   methods: {
