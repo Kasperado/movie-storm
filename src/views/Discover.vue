@@ -3,14 +3,14 @@
     <div class="type">
       <h1>Choose type</h1>
       <span>Search for </span>
-      <select v-model="type">
+      <select v-model="type" @change='resetGenres'>
         <option value='movie'>Movies</option>
         <option value='tv'>TV shows</option>
       </select>
     </div>
 
     <div class="sort_by">
-      <span>Sort by:</span>
+      <span>Sort them by:</span>
       <select v-model='sort_by'>
         <option value="popularity.asc">Popularity Ascending</option>
         <option value="popularity.desc">Popularity Descending</option>
@@ -29,11 +29,19 @@
     <h2>Fill queries (or leave empty to exclude):</h2>
 
     <div class="genres">
-      <span>Genres separated by comas:</span>
-      <input type="text" name="genres" v-model='genres' placeholder="Comedy,Action,Adventure">
-      <p>{{'Valid genres for ' + this.type + ' are: ' }}<br>
-        <span>{{(this.type == 'movie' ? this.genre_list_movie_names : this.genre_list_tv_names) + ''}}</span>
-      </p>
+      <p>Select genres to include in search:</p>
+
+      <div class="genres_container" v-if="type == 'movie'" key='mm'>
+        <div @click='editGenres' class="genre_select" v-for='m in genre_list_movie_names' :id='m' :key='m'>
+          {{ m }}
+        </div>
+      </div>
+
+      <div class="genres_container" v-else key='tv'>
+        <div @click='editGenres' class="genre_select" v-for='tv in genre_list_tv_names' :id='tv' :key='tv'>
+          {{ tv }}
+        </div>
+      </div>
     </div>
 
     <div class="vote_count">
@@ -91,7 +99,7 @@ export default {
     return {
       type: 'movie',
       sort_by: 'popularity.desc',
-      genres: '',
+      genres: [],
       vote_count: 'more',
       vote_count_value: '',
       vote_avg: 'more',
@@ -108,40 +116,57 @@ export default {
   computed: {
     genre_list_movie_names: function() {
       return this.genre_list_movie.map((g) => {
-        return ' ' + g.name;
+        return g.name;
       });
     },
     genre_list_tv_names: function() {
       return this.genre_list_tv.map((g) => {
-        return ' ' + g.name;
+        return g.name;
       });
     }
   },
   methods: {
 
+    resetGenres() {
+      this.genres = [];
+    },
+
+    editGenres(event, name) {
+      if (name == null) {
+        if (event.target.classList.contains('genre_select_active')) {
+          event.target.classList.remove('genre_select_active');
+          this.genres.splice(this.genres.indexOf(event.target.innerText), 1);
+        } else {
+          event.target.classList.add('genre_select_active');
+          this.genres.push(event.target.innerText);
+        }
+      } else {
+        document.getElementById(name).classList.add('genre_select_active');
+      }
+
+    },
+
     filterInput() {
       let flag = false; // Triggers when something is wrong
-
       // Genres
       let genre_query = '&with_genres=';
       if (this.genres != '') {
         let tempGenreArr = this.type == 'movie' ? this.genre_list_movie : this.genre_list_tv;
-        let tempInputArr = this.genres.split(',');
 
         // Get Ids from Input array
         let tempIdArr = [];
-        tempInputArr.forEach((g) => {
+        this.genres.forEach((g) => {
           tempGenreArr.forEach((e) => {
             if (e.name.toLowerCase() == g.toLowerCase()) {
               tempIdArr.push(e.id);
             }
           });
         });
-
+        // Client side check
         if (tempIdArr.length < 1) {
           alert("None of given genres exist.");
           flag = true;
-        } else if (tempIdArr.length < tempInputArr.length) {
+        } else if (tempIdArr.length < this.genres.length) {
           alert("Some of given genres are not valid.");
           flag = true;
         } else {
@@ -217,22 +242,33 @@ export default {
 
     submitSearch() {
 
+      let sendThis = {};
+
+      sendThis.type = this.type;
+      sendThis.sort_by = this.sort_by;
+
+      sendThis.vote_count = this.vote_count;
+      sendThis.vote_avg = this.vote_avg;
+      sendThis.runtime = this.runtime;
+
+      if (this.genres.length > 0)
+        sendThis.genres = this.genres.join();
+
+      if (this.vote_count_value)
+        sendThis.vote_count_value = this.vote_count_value;
+
+      if (this.vote_avg_value)
+        sendThis.vote_avg_value = this.vote_avg_value;
+
+      if (this.runtime_value)
+        sendThis.runtime_value = this.runtime_value;
+
       this.$router.push({
         name: 'discover',
         params: {
           page: 1,
         },
-        query: {
-          type: this.type,
-          sort_by: this.sort_by,
-          genres: this.genres,
-          vote_count: this.vote_count,
-          vote_count_value: this.vote_count_value,
-          vote_avg: this.vote_avg,
-          vote_avg_value: this.vote_avg_value,
-          runtime: this.runtime,
-          runtime_value: this.runtime_value,
-        },
+        query: sendThis
       });
 
     }
@@ -270,14 +306,18 @@ export default {
 
       this.type = this.$route.query.type;
       this.sort_by = this.$route.query.sort_by;
-      this.genres = this.$route.query.genres;
+      this.genres = this.$route.query.genres != null ? this.$route.query.genres.split(',') : [];
+      this.$nextTick(function() {
+        this.genres.forEach((g) => {
+          this.editGenres(null, g);
+        });
+      })
       this.vote_count = this.$route.query.vote_count;
-      this.vote_count_value = this.$route.query.vote_count_value;
+      this.vote_count_value = this.$route.query.vote_count_value || '';
       this.vote_avg = this.$route.query.vote_avg;
-      this.vote_avg_value = this.$route.query.vote_avg_value;
+      this.vote_avg_value = this.$route.query.vote_avg_value || '';
       this.runtime = this.$route.query.runtime;
-      this.runtime_value = this.$route.query.runtime_value;
-
+      this.runtime_value = this.$route.query.runtime_value || '';
       axios.get(`https://api.themoviedb.org/3/discover/${ this.type }?${ this.$store.state.api_key }&page=${ (this.$route.params.page || 1) }
     &sort_by=${ this.sort_by + this.filterInput() }`)
         .then((response) => {
@@ -285,8 +325,6 @@ export default {
         })
         .catch(() => {});
     }
-
-
   }
 }
 </script>
@@ -360,17 +398,33 @@ select {
     }
 }
 
-div p {
-    width: 50%;
+.genres_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-flow: row wrap;
+    width: 95%;
     margin: auto;
+    user-select: none;
+    .genre_select {
+        padding: 8px;
+        border-radius: 24px;
+        margin: 4px;
+        background-color: $navColor;
+        cursor: pointer;
+        border: 2px gray solid;
+        transition: border 0.4s, background-color 0.4s;
+        font-weight: 400;
+    }
+    .genre_select_active {
+        border-color: $borderColor;
+
+    }
 }
 
+p,
 span {
     font-weight: 400;
-}
-
-.genre_help {
-    color: $borderColor;
 }
 
 .results_container {
@@ -401,6 +455,10 @@ button {
     .results_container {
         width: 95%;
     }
+
+    .genres_container {
+        width: 90%;
+    }
 }
 @media (min-width: $rwdTabletLandscape) {
     section {
@@ -410,16 +468,26 @@ button {
     .results_container {
         width: 90%;
     }
+
+    .genres_container {
+        width: 80%;
+    }
 }
 @media (min-width: $rwdLaptop) {
     .results_container {
         width: 85%;
+    }
+    .genres_container {
+        width: 65%;
     }
 }
 @media (min-width: $rwdDesktop) {
 
     .results_container {
         width: 80%;
+    }
+    .genres_container {
+        width: 55%;
     }
 }
 </style>
