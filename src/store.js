@@ -9,7 +9,9 @@ export default new Vuex.Store({
     ready: false,
     sliderMovies: [],
     homeResults: [],
-    homeThemes: []
+    homeThemes: [],
+    movie_genres: [],
+    tv_genres: []
   },
   mutations: {
     readyUp (state){
@@ -23,8 +25,13 @@ export default new Vuex.Store({
     },
     addHomeThemes(state, t) {
       state.homeThemes.push(t);
+    },
+    addMovieGenres(state, g) {
+      state.movie_genres.push(...g);
+    },
+    addTVGenres(state, g) {
+      state.tv_genres.push(...g);
     }
-
   },
   actions: {
 

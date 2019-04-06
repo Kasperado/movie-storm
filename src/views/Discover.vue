@@ -1,57 +1,77 @@
 <template lang="html">
   <section>
     <div class="type">
-       <p>Choose type</p>
-      movie<input type="radio" name="type" value='movie' checked><br>
-      tv<input type="radio" name="type" value='tv'>
+      <h1>Choose type</h1>
+      <span>Search for </span>
+      <select v-model="type">
+        <option value='movie'>Movies</option>
+        <option value='tv'>TV shows</option>
+      </select>
     </div>
 
-<div class="sort_by">
-  Sort by:
-  <select>
-    <option value="popAsc">Popularity Ascending</option>
-    <option value="popDesc">Popularity Descending</option>
+    <div class="sort_by">
+      <span>Sort by:</span>
+      <select v-model='sort_by'>
+        <option value="popularity.asc">Popularity Ascending</option>
+        <option value="popularity.desc">Popularity Descending</option>
 
-    <option value="releaseAsc">Release Date Ascending</option>
-    <option value="releaseDesc">Release Date Descending</option>
+        <option value="release_date.asc">Release Date Ascending</option>
+        <option value="release_date.desc">Release Date Descending</option>
 
-    <option value="titleAsc">Title Ascending</option>
-    <option value="titleDesc">Title Descending</option>
+        <option value="vote_average.asc">Vote Average Ascending</option>
+        <option value="vote_average.desc">Vote Average Descending</option>
 
-    <option value="voteAvgAsc">Vote Average Ascending</option>
-    <option value="voteAvgDesc">Vote Average Descending</option>
+        <option value="vote_count.asc">Vote Count Ascending</option>
+        <option value="vote_count.desc">Vote Count Descending</option>
+      </select>
+    </div>
 
-    <option value="voteCountAsc">Vote Count Ascending</option>
-    <option value="voteCountDesc">Vote Count Descending</option>
-  </select>
-</div>
+    <h2>Fill queries (or leave empty to exclude):</h2>
 
-<div class="vote_count">
-  Choose vote count
-  <input type="text" name="vote_count_value" value="100">
-  m<input type="radio" name="vote_count" value='more' checked>
-  l<input type="radio" name="vote_count" value='less'>
-</div>
+    <div class="genres">
+      <span>Genres separated by comas:</span>
+      <input type="text" name="genres" v-model='genres' placeholder="Comedy,Action,Adventure">
+      <p>{{'Valid genres for ' + this.type + ' are: ' }}<br>
+        <span>{{(this.type == 'movie' ? this.genre_list_movie_names : this.genre_list_tv_names) + ''}}</span>
+      </p>
+    </div>
 
-<div class="vote_avg">
-  Choose vote avg
-  <input type="text" name="vote_avg_value" value="7.59">
-  m<input type="radio" name="vote_avg" value='more' checked>
-  l<input type="radio" name="vote_avg" value='less'>
-</div>
+    <div class="vote_count">
+      <span>Has number of votes equal or</span>
+      <select v-model="vote_count">
+        <option value='more'>greater</option>
+        <option value='less'>smaller</option>
+      </select>
+      <span>than</span>
+      <input type="number" name="vote_count_value" v-model='vote_count_value' placeholder='From 1 to Infinity'>
+    </div>
 
+    <div class="vote_avg">
+      <span>Average score is equal or </span>
+      <select v-model="vote_avg">
+        <option value='more'>greater</option>
+        <option value='less'>smaller</option>
+      </select>
+      <span>than</span>
+      <input type="number" name="vote_avg_value" v-model='vote_avg_value' placeholder="From 1 to 10">
+    </div>
 
-<div class="runtime">
-  Choose runtime
-  <input type="text" name="runtime_value" value="120">
-  m<input type="radio" name="runtime" value='more' checked>
-  l<input type="radio" name="runtime" value='less'>
-</div>
-<button type="button" name="button" @click='handleInput'>Click to search</button>
+    <div class="runtime">
+      <span v-if="this.type == 'tv'">Episode </span>
+      <span v-else>Movie </span>
+      <span>runtime (in minutes) is equal or</span>
+      <select v-model="runtime">
+        <option value='more'>greater</option>
+        <option value='less'>smaller</option>
+      </select>
+      <span>than</span>
+      <input type="number" name="runtime_value"  v-model='runtime_value' placeholder="From 1 to Infinity">
+    </div>
+    <button type="button" name="button" @click='submitSearch'>Click to search</button>
 
     <p style="font-size: 28px;">Search results:</p>
     <searchResults :data='this.results.results' />
-    <changePage routeName='discover' :pages='this.results.total_pages' />
+    <changePage routeName='discover' :pages='this.results.total_results > 0 ? this.results.total_pages : null' />
   </section>
 </template>
 
@@ -69,33 +89,204 @@ export default {
   },
   data() {
     return {
+      type: 'movie',
+      sort_by: 'popularity.desc',
+      genres: '',
+      vote_count: 'more',
+      vote_count_value: '',
+      vote_avg: 'more',
+      vote_avg_value: '',
+      runtime: 'more',
+      runtime_value: '',
       results: {
         results: []
       },
+      genre_list_movie: [],
+      genre_list_tv: []
+    }
+  },
+  computed: {
+    genre_list_movie_names: function() {
+      return this.genre_list_movie.map((g) => {
+        return ' ' + g.name;
+      });
+    },
+    genre_list_tv_names: function() {
+      return this.genre_list_tv.map((g) => {
+        return ' ' + g.name;
+      });
     }
   },
   methods: {
 
-    handleInput() {
+    filterInput() {
+      let flag = false; // Triggers when something is wrong
 
-      //get type
-      //get sort_by
-      // vote_count
-      // vote_avg
-      //runtime
+      // Genres
+      let genre_query = '&with_genres=';
+      if (this.genres != '') {
+        let tempGenreArr = this.type == 'movie' ? this.genre_list_movie : this.genre_list_tv;
+        let tempInputArr = this.genres.split(',');
 
-      axios.get(`https://api.themoviedb.org/3/discover/movie?${ this.$store.state.api_key }&language=en-US&
-          query=${this.searchValue}&page=${ (this.$route.params.page || 1) }`)
+        // Get Ids from Input array
+        let tempIdArr = [];
+        tempInputArr.forEach((g) => {
+          tempGenreArr.forEach((e) => {
+            if (e.name.toLowerCase() == g.toLowerCase()) {
+              tempIdArr.push(e.id);
+            }
+          });
+        });
+
+        if (tempIdArr.length < 1) {
+          alert("None of given genres exist.");
+          flag = true;
+        } else if (tempIdArr.length < tempInputArr.length) {
+          alert("Some of given genres are not valid.");
+          flag = true;
+        } else {
+          genre_query += tempIdArr.join();
+        }
+
+      } else {
+        genre_query = ''; // Remove query, it will be used but it will change nothing
+      }
+
+      let vote_count_query = '&vote_count';
+      if (this.vote_count_value != '') {
+
+        if (this.vote_count_value < 1) {
+          alert("Given vote count must be above 1");
+          flag = true;
+        }
+
+        if (this.vote_count == 'more') {
+          vote_count_query += '.gte=' + this.vote_count_value;
+        } else {
+          vote_count_query += '.lte=' + this.vote_count_value;
+        }
+
+      } else {
+        vote_count_query = '';
+      }
+
+      let vote_avg_query = '&vote_average';
+      if (this.vote_avg_value != '') {
+
+        if (this.vote_avg_value < 1 || this.vote_avg_value > 10) {
+          alert("Average score should range from 1 to 10.");
+          flag = true;
+        }
+
+        if (this.vote_avg == 'more') {
+          vote_avg_query += '.gte=' + this.vote_avg_value;
+        } else {
+          vote_avg_query += '.lte=' + this.vote_avg_value;
+        }
+
+      } else {
+        vote_avg_query = '';
+      }
+
+      let runtime_query = '&with_runtime';
+      if (this.runtime_value != '') {
+
+        if (this.runtime_value < 1) {
+          alert("Given runtime must be above 1 minute");
+          flag = true;
+        }
+
+        if (this.runtime == 'more') {
+          runtime_query += '.gte=' + this.runtime_value;
+        } else {
+          runtime_query += '.lte=' + this.runtime_value;
+        }
+
+      } else {
+        runtime_query = '';
+      }
+
+      let addedQuery = genre_query + vote_count_query + vote_avg_query + runtime_query;
+      if (!flag) {
+        return addedQuery;
+      } else {
+        return '';
+      }
+
+    },
+
+    submitSearch() {
+
+      this.$router.push({
+        name: 'discover',
+        params: {
+          page: 1,
+        },
+        query: {
+          type: this.type,
+          sort_by: this.sort_by,
+          genres: this.genres,
+          vote_count: this.vote_count,
+          vote_count_value: this.vote_count_value,
+          vote_avg: this.vote_avg,
+          vote_avg_value: this.vote_avg_value,
+          runtime: this.runtime,
+          runtime_value: this.runtime_value,
+        },
+      });
+
+    }
+  },
+  mounted() {
+
+    // Check if vuex already has genre lists from previous use
+    if (this.$store.state.movie_genres.length > 0 && this.$store.state.tv_genres.length > 0) {
+
+      this.genre_list_movie = this.$store.state.movie_genres;
+      this.genre_list_tv = this.$store.state.tv_genres;
+
+    } else {
+
+      // Genre list for movies
+      axios.get(`https://api.themoviedb.org/3/genre/movie/list?${ this.$store.state.api_key }`)
+        .then((response) => {
+          this.genre_list_movie = response.data.genres;
+          this.$store.commit('addMovieGenres', response.data.genres);
+        })
+        .catch(() => {});
+
+      // Genre list for tv
+      axios.get(`https://api.themoviedb.org/3/genre/tv/list?${ this.$store.state.api_key }`)
+        .then((response) => {
+          this.genre_list_tv = response.data.genres;
+          this.$store.commit('addTVGenres', response.data.genres);
+        })
+        .catch(() => {});
+
+    }
+
+    // If there is query then send axios
+    if (this.$route.query.type != null) {
+
+      this.type = this.$route.query.type;
+      this.sort_by = this.$route.query.sort_by;
+      this.genres = this.$route.query.genres;
+      this.vote_count = this.$route.query.vote_count;
+      this.vote_count_value = this.$route.query.vote_count_value;
+      this.vote_avg = this.$route.query.vote_avg;
+      this.vote_avg_value = this.$route.query.vote_avg_value;
+      this.runtime = this.$route.query.runtime;
+      this.runtime_value = this.$route.query.runtime_value;
+
+      axios.get(`https://api.themoviedb.org/3/discover/${ this.type }?${ this.$store.state.api_key }&page=${ (this.$route.params.page || 1) }
+    &sort_by=${ this.sort_by + this.filterInput() }`)
         .then((response) => {
           this.results = response.data;
         })
         .catch(() => {});
     }
-  },
-  mounted() {
-    if (this.$route.params.value != null) {
-      this.handleInput();
-    }
+
+
   }
 }
 </script>
@@ -109,11 +300,23 @@ section {
     min-height: 80vh;
 }
 
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0;
+    /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+    /* Firefox */
+}
+
 input {
-    min-width: 200px;
-    width: 10vw;
     margin: auto;
     padding: 10px;
+    margin: 8px;
     border-radius: 16px;
     border: none;
     transition: border 0.4s;
@@ -127,8 +330,47 @@ input {
     }
 }
 
-input[type=radio] {
-    border: 2px $borderColor solid;
+select {
+    padding: 4px;
+    margin: 4px;
+    background-color: $navColor;
+    border: none;
+    color: $borderColor;
+    font-weight: bold;
+    border-radius: 4px;
+    outline: none;
+    option::selection {
+        color: red;
+    }
+}
+
+.types {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+    label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        margin: 0 8px;
+        span {
+            padding: 4px;
+        }
+    }
+}
+
+div p {
+    width: 50%;
+    margin: auto;
+}
+
+span {
+    font-weight: 400;
+}
+
+.genre_help {
+    color: $borderColor;
 }
 
 .results_container {
@@ -140,12 +382,31 @@ input[type=radio] {
     margin: auto;
 }
 
+button {
+    background-color: $navColor;
+    border: 2px $borderColor solid;
+    color: $borderColor;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.4s, border-color 0.4s;
+    outline: none;
+    &:hover {
+        color: $borderColorHover;
+        border-color: $borderColorHover;
+    }
+}
+
 @media (min-width: $rwdTablet) {
     .results_container {
         width: 95%;
     }
 }
 @media (min-width: $rwdTabletLandscape) {
+    section {
+        min-height: 82vh;
+    }
+
     .results_container {
         width: 90%;
     }
@@ -156,6 +417,7 @@ input[type=radio] {
     }
 }
 @media (min-width: $rwdDesktop) {
+
     .results_container {
         width: 80%;
     }

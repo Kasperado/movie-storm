@@ -33,7 +33,9 @@ export default {
           params: {
             value: this.$route.params.value,
             page: (currentPage + direction)
-          }
+          },
+          query: this.$route.query,
+
         });
         window.scrollTo(0, 0);
       }

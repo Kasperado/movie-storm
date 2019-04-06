@@ -3,7 +3,7 @@
     <preview v-for="r in this.filteredResults" :data="r" :key='r.id'></preview>
   </div>
   <div v-else>
-    <span>Nothing found</span>
+    <p>Nothing found</p>
   </div>
 </template>
 

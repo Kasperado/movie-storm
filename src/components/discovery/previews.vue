@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="container">
+  <div class="container" v-if='this.results.length'>
     <div @click="scrollPreviews(-1)" class="arr_left">
       <i class="fas fa-chevron-left"></i>
     </div>
@@ -9,6 +9,9 @@
     <div @click="scrollPreviews(1)" class="arr_left">
       <i class="fas fa-chevron-right"></i>
     </div>
+  </div>
+  <div v-else>
+    <p>Nothing found</p>
   </div>
 </template>
 
@@ -35,9 +38,11 @@ export default {
   },
   methods: {
     scrollPreviews(direction) { // move scroll by (width + margin) of movie preview
-      let value = document.querySelector('.movie_preview').offsetWidth;
-      value += parseInt(window.getComputedStyle(document.querySelector('.movie_preview')).getPropertyValue('margin-left')) * 2;
-      this.$refs.mov.scrollBy(value * direction, 0);
+      let containerWidth = document.querySelector('.movies_container').offsetWidth; // Get container width
+      let value = document.querySelector('.movie_preview').offsetWidth; // Get preview width
+      value += parseInt(window.getComputedStyle(document.querySelector('.movie_preview')).getPropertyValue('margin-left')) * 2; // Add margin
+      let valueToScroll = Math.floor(containerWidth / value) * value; // Scroll so much that all visible previews will be scrolled
+      this.$refs.mov.scrollBy(valueToScroll * direction, 0); // Scrolling
     }
   }
 }
@@ -75,6 +80,10 @@ export default {
         flex-shrink: 0;
         width: 70%;
     }
+}
+
+div p {
+    font-weight: 400;
 }
 
 @media (min-width: $rwdTablet) {
