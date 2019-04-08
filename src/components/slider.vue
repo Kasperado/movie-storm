@@ -7,7 +7,7 @@
 
     <div class="counter_container">
       <div class="counter">
-        <div v-for='(btn, index) in this.heroMovies' @click="changeSlide(index, true)" :class="'counter_btn ' + (index == 0 ? 'counter_btn-active' : '')"></div>
+        <div v-for='(btn, index) in this.heroMovies' @click="changeSlide(index, true)" :class="'counter_btn ' + (index == 0 ? 'counter_btn-active' : '')" :key="'counter' + index"></div>
       </div>
     </div>
 
@@ -16,7 +16,7 @@
     </div>
 
     <div class="movie_hero" v-for='(r, index) in heroMovies' :style=" index == 0 ? 'opacity: 1' : 'opacity: 0'" :key="r.id">
-        <router-link :to="{ name: getCategory(r), params: {id : r.id } }" :id='getCategory(r)'>
+        <router-link :to="{ name: 'details', params: {type: getCategory(r), id : r.id } }" :id='getCategory(r)'>
           <img :src="'https://image.tmdb.org/t/p/original/' + r.backdrop_path" :alt="r.title || r.name">
         </router-link>
       <div class="movie_info">

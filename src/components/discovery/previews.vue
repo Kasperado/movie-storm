@@ -110,6 +110,4 @@ div p {
         }
     }
 }
-@media (min-width: $rwdLaptop) {}
-@media (min-width: $rwdDesktop) {}
 </style>

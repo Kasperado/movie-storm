@@ -78,7 +78,4 @@ export default {
     }
 
 }
-@media (min-width: $rwdTabletLandscape) {}
-@media (min-width: $rwdLaptop) {}
-@media (min-width: $rwdDesktop) {}
 </style>

@@ -339,11 +339,6 @@ p {
         .mobile_menu {
             display: none;
         }
-
     }
-
 }
-
-@media (min-width: $rwdLaptop) {}
-@media (min-width: $rwdDesktop) {}
 </style>

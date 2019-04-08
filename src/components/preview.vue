@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="movie_preview">
-    <router-link :to="{ name: getCategory(data), params: {id : data.id } }">
+    <router-link :to="{ name: 'details', params: {type: getCategory(data), id : data.id } }">
       <img :src="'https://image.tmdb.org/t/p/w500/'+(data.poster_path || data.profile_path)" :alt="data.title || data.original_name" title='Click for view'>
     </router-link>
     <span>{{data.title || data.name ||  data.original_name}}</span>
@@ -8,7 +8,7 @@
       {{ getYear(data) || (data.gender == 1 ? 'Female' : 'Male') }}
     </div>
     <div class="score" v-if='data.vote_average || data.known_for_department'>
-      {{  getJob(data) || (data.vote_average + (Number.isInteger(data.vote_average) ?  '.0' : '') + ' &#9733;')}}
+      {{ data.known_for_department  || (data.vote_average + (Number.isInteger(data.vote_average) ?  '.0' : '') + ' &#9733;')}}
     </div>
   </div>
 </template>
@@ -30,18 +30,6 @@ export default {
         return 'tv';
       } else { // Person
         return 'person';
-      }
-    },
-
-    getJob(r) {
-      if (r.known_for_department == 'Acting') {
-        return r.gender == 1 ? 'Actress' : 'Actor';
-      } else if (r.known_for_department == 'Directing') {
-        return r.gender == 1 ? 'Directress' : 'Director';
-      } else if (r.known_for_department != null) {
-        return r.known_for_department;
-      } else {
-        return null;
       }
     },
 

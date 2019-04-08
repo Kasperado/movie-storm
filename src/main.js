@@ -28,17 +28,9 @@ const router = new Router({
       component: () => import('./views/Searchbox.vue')
     },
     {
-      path: '/movie/:id',
-      name: 'movie',
-      component: () => import('./views/Movies.vue')
-    },{
-      path: '/tv/:id',
-      name: 'tv',
-      component: () => import('./views/TV.vue')
-    },{
-      path: '/person/:id',
-      name: 'person',
-      component: () => import('./views/Person.vue')
+      path: '/details/:type/:id',
+      name: 'details',
+      component: () => import('./views/Details.vue')
     },
     {
       path: '*',
