@@ -1,7 +1,7 @@
 # Movie Storm 
 
 ## Project setup
-**In order to use this project you will need [TMDb API](https://www.themoviedb.org/documentation/api) **
+**In order to use this project you will need API key from [TMDb API](https://www.themoviedb.org/documentation/api)**
 ```
 npm install
 ```
