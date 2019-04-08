@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    api_key: '', // Put your API here
+    api_key: 'api_key=', // Put your API here
     ready: false,
     sliderMovies: [],
     homeResults: [],

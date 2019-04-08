@@ -50,23 +50,37 @@ export default {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    max-width: 600px;
+    max-width: 480px;
     margin: auto;
     .go {
-        margin: 12px;
+        margin: 8px;
         background-color: $borderColor;
-        width: 120px;
+        min-width: 60px;
         border-radius: 4px;
         cursor: pointer;
     }
     i {
-        font-size: 2em;
+        font-size: 1.5em;
         padding: 8px;
         color: white;
     }
     .disabled {
         background-color: gray;
         pointer-events: none;
+    }
+}
+
+@media (min-width: $rwdTablet) {
+    .direction_container {
+        max-width: 600px;
+        .go {
+            margin: 12px;
+            min-width: 120px;
+        }
+        i {
+            font-size: 2em;
+            padding: 8px;
+        }
     }
 }
 </style>

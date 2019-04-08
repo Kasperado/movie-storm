@@ -78,6 +78,7 @@
     <button type="button" name="button" @click='submitSearch'>Click to search</button>
 
     <p style="font-size: 28px;">Search results:</p>
+    <changePage routeName='discover' :pages='this.results.total_results > 0 ? this.results.total_pages : null' />
     <searchResults :data='this.results.results' />
     <changePage routeName='discover' :pages='this.results.total_results > 0 ? this.results.total_pages : null' />
   </section>
@@ -150,29 +151,18 @@ export default {
       let flag = false; // Triggers when something is wrong
       // Genres
       let genre_query = '&with_genres=';
-      if (this.genres != '') {
+      if (this.genres.length > 0) {
         let tempGenreArr = this.type == 'movie' ? this.genre_list_movie : this.genre_list_tv;
 
         // Get Ids from Input array
         let tempIdArr = [];
         this.genres.forEach((g) => {
           tempGenreArr.forEach((e) => {
-            if (e.name.toLowerCase() == g.toLowerCase()) {
-              tempIdArr.push(e.id);
-            }
+            if (e.name.toLowerCase() == g.toLowerCase())
+              tempIdArr.push(e.id)
           });
         });
-        // Client side check
-        if (tempIdArr.length < 1) {
-          alert("None of given genres exist.");
-          flag = true;
-        } else if (tempIdArr.length < this.genres.length) {
-          alert("Some of given genres are not valid.");
-          flag = true;
-        } else {
-          genre_query += tempIdArr.join();
-        }
-
+        genre_query += tempIdArr.join() // Add to query
       } else {
         genre_query = ''; // Remove query, it will be used but it will change nothing
       }
@@ -241,90 +231,105 @@ export default {
     },
 
     submitSearch() {
+      if (this.filterInput() != '') {
+        let sendThis = {};
 
-      let sendThis = {};
+        sendThis.type = this.type;
+        sendThis.sort_by = this.sort_by;
 
-      sendThis.type = this.type;
-      sendThis.sort_by = this.sort_by;
+        if (this.genres.length > 0) {
+          sendThis.genres = this.genres.join();
+        }
 
-      sendThis.vote_count = this.vote_count;
-      sendThis.vote_avg = this.vote_avg;
-      sendThis.runtime = this.runtime;
+        if (this.vote_count_value) {
+          sendThis.vote_count = this.vote_count;
+          sendThis.vote_count_value = this.vote_count_value;
+        }
 
-      if (this.genres.length > 0)
-        sendThis.genres = this.genres.join();
+        if (this.vote_avg_value) {
+          sendThis.vote_avg = this.vote_avg;
+          sendThis.vote_avg_value = this.vote_avg_value;
+        }
 
-      if (this.vote_count_value)
-        sendThis.vote_count_value = this.vote_count_value;
+        if (this.runtime_value) {
+          sendThis.runtime = this.runtime;
+          sendThis.runtime_value = this.runtime_value;
+        }
 
-      if (this.vote_avg_value)
-        sendThis.vote_avg_value = this.vote_avg_value;
+        this.$router.push({
+          name: 'discover',
+          params: {
+            page: 1,
+          },
+          query: sendThis
+        });
+      }
+    },
 
-      if (this.runtime_value)
-        sendThis.runtime_value = this.runtime_value;
+    genresAxios() {
+      if (this.$store.state.movie_genres.length > 0 && this.$store.state.tv_genres.length > 0) {
 
-      this.$router.push({
-        name: 'discover',
-        params: {
-          page: 1,
-        },
-        query: sendThis
-      });
+        this.genre_list_movie = this.$store.state.movie_genres;
+        this.genre_list_tv = this.$store.state.tv_genres;
+        this.sendQuery();
+      } else {
+
+        // Genre list for movies
+        axios.get(`https://api.themoviedb.org/3/genre/movie/list?${ this.$store.state.api_key }`)
+          .then((response) => {
+            this.genre_list_movie = response.data.genres;
+            this.$store.commit('addMovieGenres', response.data.genres);
+            this.sendQuery();
+          })
+          .catch(() => {});
+
+        // Genre list for tv
+        axios.get(`https://api.themoviedb.org/3/genre/tv/list?${ this.$store.state.api_key }`)
+          .then((response) => {
+            this.genre_list_tv = response.data.genres;
+            this.$store.commit('addTVGenres', response.data.genres);
+            this.sendQuery();
+          })
+          .catch(() => {});
+
+      }
+    },
+
+    sendQuery() {
+      // If there is query then send axios
+      if (this.$route.query.type != null) {
+
+        this.type = this.$route.query.type;
+        this.sort_by = this.$route.query.sort_by;
+        this.genres = this.$route.query.genres != null ? this.$route.query.genres.split(',') : [];
+        this.$nextTick(function() {
+          this.genres.forEach((g) => {
+            this.editGenres(null, g);
+          });
+        });
+        this.vote_count = this.$route.query.vote_count || 'more';
+        this.vote_count_value = this.$route.query.vote_count_value || '';
+        this.vote_avg = this.$route.query.vote_avg || 'more';
+        this.vote_avg_value = this.$route.query.vote_avg_value || '';
+        this.runtime = this.$route.query.runtime || 'more';
+        this.runtime_value = this.$route.query.runtime_value || '';
+
+        axios.get(`https://api.themoviedb.org/3/discover/${ this.type }?${ this.$store.state.api_key }&page=${ (this.$route.params.page || 1) }
+      &sort_by=${ this.sort_by + this.filterInput() }`)
+          .then((response) => {
+            this.results = response.data;
+          })
+          .catch(() => {});
+      }
 
     }
+
   },
   mounted() {
 
     // Check if vuex already has genre lists from previous use
-    if (this.$store.state.movie_genres.length > 0 && this.$store.state.tv_genres.length > 0) {
+    this.genresAxios();
 
-      this.genre_list_movie = this.$store.state.movie_genres;
-      this.genre_list_tv = this.$store.state.tv_genres;
-
-    } else {
-
-      // Genre list for movies
-      axios.get(`https://api.themoviedb.org/3/genre/movie/list?${ this.$store.state.api_key }`)
-        .then((response) => {
-          this.genre_list_movie = response.data.genres;
-          this.$store.commit('addMovieGenres', response.data.genres);
-        })
-        .catch(() => {});
-
-      // Genre list for tv
-      axios.get(`https://api.themoviedb.org/3/genre/tv/list?${ this.$store.state.api_key }`)
-        .then((response) => {
-          this.genre_list_tv = response.data.genres;
-          this.$store.commit('addTVGenres', response.data.genres);
-        })
-        .catch(() => {});
-
-    }
-
-    // If there is query then send axios
-    if (this.$route.query.type != null) {
-
-      this.type = this.$route.query.type;
-      this.sort_by = this.$route.query.sort_by;
-      this.genres = this.$route.query.genres != null ? this.$route.query.genres.split(',') : [];
-      this.$nextTick(function() {
-        this.genres.forEach((g) => {
-          this.editGenres(null, g);
-        });
-      })
-      this.vote_count = this.$route.query.vote_count;
-      this.vote_count_value = this.$route.query.vote_count_value || '';
-      this.vote_avg = this.$route.query.vote_avg;
-      this.vote_avg_value = this.$route.query.vote_avg_value || '';
-      this.runtime = this.$route.query.runtime;
-      this.runtime_value = this.$route.query.runtime_value || '';
-      axios.get(`https://api.themoviedb.org/3/discover/${ this.type }?${ this.$store.state.api_key }&page=${ (this.$route.params.page || 1) }
-    &sort_by=${ this.sort_by + this.filterInput() }`)
-        .then((response) => {
-          this.results = response.data;
-        })
-        .catch(() => {});
-    }
   }
 }
 </script>

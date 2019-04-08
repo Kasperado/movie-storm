@@ -38,7 +38,7 @@
           </div>
 
           <div class="date">
-              <h2>Release date:</h2>
+              <h2>First episode aired:</h2>
             <span>{{ this.results.first_air_date }}</span>
           </div>
 

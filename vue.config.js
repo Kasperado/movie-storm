@@ -1,6 +1,6 @@
 // vue.config.js
 module.exports = {
-   publicPath: "/s/",
+   publicPath: "/views/movie-storm/",
    css: {
     loaderOptions: {
       sass: {

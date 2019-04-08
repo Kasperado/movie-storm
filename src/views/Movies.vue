@@ -31,6 +31,11 @@
           <span>{{ getGenres(this.results.genres) }}</span>
         </div>
 
+        <div class="runtime">
+          <h2>Runtime:</h2>
+          <span>{{ this.results.runtime + " minutes" }}</span>
+        </div>
+
         <div class="companies">
             <h2>Producers:</h2>
           <span v-for='(c, index) in this.results.production_companies' :key='c.name'>{{ (index == 0 ? c.name :  ', ' + c.name)}}</span>
