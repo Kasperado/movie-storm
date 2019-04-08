@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    api_key: 'api_key=', // Put your API here
+    api_key: 'api_key= <your_key> ', // This is one of PHP variables which will be send to TMDb API to get data
     ready: false,
     sliderMovies: [],
     homeResults: [],

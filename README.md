@@ -1,6 +1,7 @@
-# movie_db
+# Movie Storm 
 
 ## Project setup
+**In order to use this project you will need [TMDb API](https://www.themoviedb.org/documentation/api) **
 ```
 npm install
 ```
@@ -14,16 +15,3 @@ npm run serve
 ```
 npm run build
 ```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
